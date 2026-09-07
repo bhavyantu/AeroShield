@@ -1,0 +1,1086 @@
+/* ============================================
+   AEROSHIELD AI
+   MAIN APPLICATION STYLES
+   ============================================ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background: #000;
+    color: #dffcff;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
+
+
+/* ============================================
+   MAIN APPLICATION
+   ============================================ */
+
+#app {
+    position: fixed;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(0, 100, 130, 0.08),
+            transparent 65%
+        );
+}
+
+
+/* ============================================
+   CAMERA CONTAINER
+   ============================================ */
+
+.camera-container {
+    position: fixed;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    z-index: 1;
+}
+
+
+/* ============================================
+   CAMERA
+   ============================================ */
+
+#camera {
+    position: fixed;
+    inset: 0;
+
+    display: block;
+
+    width: 100vw;
+    height: 100vh;
+
+    object-fit: cover;
+
+    transform: scaleX(-1);
+
+    background: #000;
+
+    z-index: 1;
+}
+
+
+/* ============================================
+   EFFECT + WRITING CANVAS
+   ============================================ */
+
+#effectCanvas,
+#writingCanvas {
+    position: fixed;
+    inset: 0;
+
+    display: block;
+
+    width: 100vw;
+    height: 100vh;
+
+    pointer-events: none;
+
+    z-index: 5;
+}
+
+
+/* ============================================
+   WRITING CANVAS
+   ============================================ */
+
+#writingCanvas {
+    transform: scaleX(-1);
+}
+
+
+/* ============================================
+   HUD
+   ============================================ */
+
+#hud {
+    position: fixed;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    pointer-events: none;
+
+    z-index: 40;
+}
+
+
+/* ============================================
+   SHIELD CONTAINER
+   ============================================ */
+
+#shieldContainer {
+    position: fixed;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    pointer-events: none;
+
+    z-index: 20;
+
+    overflow: visible;
+}
+
+
+/* ============================================
+   SHIELDS
+   ============================================ */
+
+.shield,
+.big-shield {
+    position: fixed;
+
+    pointer-events: none;
+
+    overflow: visible;
+
+    opacity: 1;
+}
+
+
+/* ============================================
+   HIDDEN
+   ============================================ */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* ============================================
+   TOP HEADER
+   ============================================ */
+
+.top-bar {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    width: 100%;
+
+    height: 76px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 30px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0, 10, 17, 0.95),
+            rgba(0, 10, 17, 0.55),
+            transparent
+        );
+
+    border-bottom:
+        1px solid
+        rgba(60, 220, 255, 0.15);
+
+    z-index: 70;
+
+    pointer-events: none;
+}
+
+
+/* ============================================
+   LOGO
+   ============================================ */
+
+.logo {
+    color:
+        rgba(130, 245, 255, 0.95);
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+    letter-spacing: 4px;
+
+    text-shadow:
+        0 0 8px
+        rgba(0, 220, 255, 0.75),
+
+        0 0 20px
+        rgba(0, 170, 255, 0.35);
+}
+
+
+/* ============================================
+   SYSTEM STATUS
+   ============================================ */
+
+.system-status {
+    color:
+        rgba(140, 230, 240, 0.75);
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+    white-space: nowrap;
+}
+
+#systemStatus {
+    color:
+        rgba(140, 230, 240, 0.75);
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+}
+
+#systemStatus.online {
+    color:
+        rgba(100, 255, 220, 0.95);
+
+    text-shadow:
+        0 0 8px
+        rgba(0, 255, 210, 0.75),
+
+        0 0 16px
+        rgba(0, 255, 210, 0.35);
+}
+
+
+/* ============================================
+   CONTROL PANEL
+   ============================================ */
+
+.control-panel {
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 24px;
+
+    transform:
+        translateX(-50%);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 10px 14px;
+
+    border:
+        1px solid
+        rgba(60, 220, 255, 0.28);
+
+    border-radius: 10px;
+
+    background:
+        rgba(0, 15, 24, 0.92);
+
+    box-shadow:
+        0 0 20px
+        rgba(0, 180, 255, 0.12),
+
+        inset 0 0 15px
+        rgba(0, 180, 255, 0.05);
+
+    backdrop-filter:
+        blur(10px);
+
+    -webkit-backdrop-filter:
+        blur(10px);
+
+    z-index: 100;
+
+    pointer-events: auto;
+
+    max-width: calc(100vw - 20px);
+
+    overflow-x: auto;
+
+    scrollbar-width: none;
+}
+
+.control-panel::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* ============================================
+   NORMAL BUTTONS
+   ============================================ */
+
+.control-panel > button {
+    min-width: 115px;
+
+    padding: 10px 15px;
+
+    border:
+        1px solid
+        rgba(80, 220, 255, 0.4);
+
+    border-radius: 5px;
+
+    background:
+        rgba(0, 35, 50, 0.8);
+
+    color:
+        rgba(170, 245, 255, 0.95);
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition:
+        0.2s ease;
+
+    box-shadow:
+        0 0 8px
+        rgba(0, 190, 255, 0.1);
+
+    flex-shrink: 0;
+}
+
+
+/* ============================================
+   BUTTON HOVER
+   ============================================ */
+
+.control-panel > button:hover {
+    border-color:
+        rgba(100, 245, 255, 0.9);
+
+    color: #ffffff;
+
+    background:
+        rgba(0, 80, 105, 0.75);
+
+    box-shadow:
+        0 0 12px
+        rgba(0, 220, 255, 0.35);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* ============================================
+   BUTTON PRESS
+   ============================================ */
+
+.control-panel > button:active {
+    transform:
+        scale(0.97);
+}
+
+
+/* ============================================
+   START SYSTEM
+   ============================================ */
+
+#startCamera {
+    border-color:
+        rgba(100, 230, 255, 0.65);
+}
+
+
+/* ============================================
+   START SYSTEM ACTIVE
+   ============================================ */
+
+#startCamera.active {
+    color: #ffffff;
+
+    border-color: #00f6ff;
+
+    background:
+        rgba(0, 90, 115, 0.9);
+
+    box-shadow:
+        0 0 8px rgba(0, 246, 255, 0.7),
+        0 0 20px rgba(0, 246, 255, 0.35);
+
+    text-shadow:
+        0 0 8px #00f6ff;
+}
+
+
+/* ============================================
+   AIR WRITE ACTIVE
+   ============================================ */
+
+#airWriteButton.active {
+    color: #ffffff;
+
+    border-color: #00ffcc;
+
+    background:
+        rgba(0, 100, 90, 0.9);
+
+    box-shadow:
+        0 0 10px rgba(0, 255, 200, 0.8),
+        0 0 25px rgba(0, 255, 200, 0.4),
+
+        inset 0 0 12px
+        rgba(0, 255, 200, 0.15);
+
+    text-shadow:
+        0 0 8px #00ffcc;
+}
+
+
+/* ============================================
+   SHIELD ACTIVE
+   ============================================ */
+
+#shieldButton.active {
+    color: #ffffff;
+
+    border-color: #ff304f;
+
+    background:
+        rgba(100, 10, 20, 0.9);
+
+    box-shadow:
+        0 0 10px rgba(255, 48, 79, 0.8),
+        0 0 25px rgba(255, 48, 79, 0.45),
+
+        inset 0 0 12px
+        rgba(255, 48, 79, 0.15);
+
+    text-shadow:
+        0 0 8px #ff304f;
+}
+
+
+/* ============================================
+   CLEAR
+   ============================================ */
+
+#clearButton {
+    border-color:
+        rgba(150, 180, 190, 0.35);
+}
+
+
+/* ============================================
+   SYSTEM INFORMATION
+   ============================================ */
+
+.system-info {
+    position: fixed;
+
+    right: 25px;
+
+    bottom: 30px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    z-index: 90;
+
+    pointer-events: none;
+}
+
+
+/* ============================================
+   INFO CARD
+   ============================================ */
+
+.info-card {
+    min-width: 180px;
+
+    padding: 8px 12px;
+
+    border:
+        1px solid
+        rgba(70, 220, 255, 0.2);
+
+    border-left:
+        2px solid
+        rgba(70, 230, 255, 0.7);
+
+    background:
+        rgba(0, 20, 30, 0.65);
+
+    color:
+        rgba(160, 235, 245, 0.85);
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+
+    backdrop-filter:
+        blur(5px);
+}
+
+
+/* ============================================
+   INFO LABEL
+   ============================================ */
+
+.info-card .label {
+    margin-right: 8px;
+
+    color:
+        rgba(100, 210, 230, 0.65);
+
+    font-size: 9px;
+
+    letter-spacing: 1.5px;
+}
+
+
+/* ============================================
+   INFO VALUE
+   ============================================ */
+
+.info-card .value {
+    color:
+        rgba(180, 250, 255, 0.95);
+
+    font-weight: 600;
+}
+
+
+/* ============================================
+   SCANLINES
+   ============================================ */
+
+#app::after {
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 65;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+
+            rgba(100, 230, 255, 0.018) 0px,
+
+            rgba(100, 230, 255, 0.018) 1px,
+
+            transparent 1px,
+
+            transparent 4px
+        );
+
+    opacity: 0.35;
+}
+
+
+/* ============================================
+   VIGNETTE
+   ============================================ */
+
+#app::before {
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 60;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+
+            transparent 45%,
+
+            rgba(0, 0, 0, 0.3) 75%,
+
+            rgba(0, 0, 0, 0.7) 100%
+        );
+}
+
+
+/* ============================================
+   AIR WRITING COLOR PANEL
+   ============================================ */
+
+.writing-color-panel {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 8px 12px;
+
+    background:
+        rgba(5, 10, 15, 0.95);
+
+    border:
+        1px solid
+        rgba(0, 246, 255, 0.45);
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 0 12px
+        rgba(0, 246, 255, 0.15);
+
+    flex-shrink: 0;
+}
+
+
+/* ============================================
+   PEN LABEL
+   ============================================ */
+
+.writing-color-label {
+    color: #00f6ff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    white-space: nowrap;
+}
+
+
+/* ============================================
+   COLOR OPTIONS
+   ============================================ */
+
+.writing-color-options {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+/* ============================================
+   COLOR BUTTONS
+   IMPORTANT:
+   Override global button CSS
+   ============================================ */
+
+.writing-color {
+    width: 25px !important;
+
+    height: 25px !important;
+
+    min-width: 25px !important;
+
+    padding: 0 !important;
+
+    margin: 0 !important;
+
+    border-radius: 50% !important;
+
+    border:
+        2px solid
+        rgba(255, 255, 255, 0.45) !important;
+
+    cursor: pointer;
+
+    flex-shrink: 0;
+
+    opacity: 1 !important;
+
+    box-shadow: none;
+
+    transform: none;
+}
+
+
+/* ============================================
+   CYAN
+   ============================================ */
+
+.writing-color.blue {
+    background: #00f6ff !important;
+    color: #00f6ff !important;
+}
+
+
+/* ============================================
+   GREEN
+   ============================================ */
+
+.writing-color.green {
+    background: #00ff66 !important;
+    color: #00ff66 !important;
+}
+
+
+/* ============================================
+   RED
+   ============================================ */
+
+.writing-color.red {
+    background: #ff304f !important;
+    color: #ff304f !important;
+}
+
+
+/* ============================================
+   PURPLE
+   ============================================ */
+
+.writing-color.purple {
+    background: #b84cff !important;
+    color: #b84cff !important;
+}
+
+
+/* ============================================
+   YELLOW
+   ============================================ */
+
+.writing-color.yellow {
+    background: #ffe600 !important;
+    color: #ffe600 !important;
+}
+
+
+/* ============================================
+   WHITE
+   ============================================ */
+
+.writing-color.white {
+    background: #ffffff !important;
+    color: #ffffff !important;
+}
+
+
+/* ============================================
+   COLOR HOVER
+   ============================================ */
+
+.writing-color:hover {
+    transform: scale(1.18) !important;
+}
+
+
+/* ============================================
+   SELECTED COLOR
+   ============================================ */
+
+.writing-color.selected {
+    transform: scale(1.25) !important;
+
+    border:
+        2px solid #ffffff !important;
+
+    box-shadow:
+        0 0 6px currentColor,
+        0 0 14px currentColor,
+        0 0 25px currentColor !important;
+}
+
+
+/* ============================================
+   CUSTOM COLOR PICKER
+   ============================================ */
+
+#writingColor {
+    width: 28px !important;
+
+    height: 28px !important;
+
+    min-width: 28px !important;
+
+    padding: 0 !important;
+
+    border:
+        2px solid #ffffff !important;
+
+    border-radius: 50% !important;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    flex-shrink: 0;
+}
+
+
+/* ============================================
+   GLOWING PEN TIP
+   ============================================ */
+
+#airWritingPenTip {
+    position: fixed;
+
+    width: 18px;
+
+    height: 18px;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    z-index: 200;
+
+    transform:
+        translate(-50%, -50%);
+
+    animation:
+        penTipPulse 1.2s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes penTipPulse {
+
+    0% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.85);
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+    }
+
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.85);
+    }
+}
+
+
+/* ============================================
+   RED SHIELD
+   ============================================ */
+
+#leftShield,
+#rightShield,
+#bigShield {
+    filter:
+        hue-rotate(180deg)
+        saturate(2.5)
+        brightness(1.2)
+
+        drop-shadow(
+            0 0 8px
+            #ff304f
+        )
+
+        drop-shadow(
+            0 0 20px
+            rgba(255, 48, 79, 0.8)
+        )
+
+        drop-shadow(
+            0 0 40px
+            rgba(255, 48, 79, 0.45)
+        );
+}
+
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 900px) {
+
+    .top-bar {
+        padding: 0 20px;
+    }
+
+    .logo {
+        font-size: 18px;
+        letter-spacing: 3px;
+    }
+
+    .control-panel > button {
+        min-width: 100px;
+    }
+
+    .system-info {
+        right: 15px;
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    .top-bar {
+        height: 62px;
+
+        padding: 0 14px;
+    }
+
+    .logo {
+        font-size: 14px;
+
+        letter-spacing: 2px;
+    }
+
+    #systemStatus,
+    .system-status {
+        font-size: 9px;
+    }
+
+    .control-panel {
+        left: 50%;
+
+        bottom: 12px;
+
+        width:
+            calc(100% - 20px);
+
+        padding: 7px;
+
+        gap: 5px;
+
+        justify-content: flex-start;
+    }
+
+    .control-panel > button {
+        min-width: 90px;
+
+        padding: 9px 10px;
+
+        font-size: 9px;
+    }
+
+    .writing-color-panel {
+        flex-shrink: 0;
+    }
+
+    .system-info {
+        right: 10px;
+
+        bottom: 70px;
+    }
+
+    .info-card {
+        min-width: 140px;
+
+        font-size: 8px;
+
+        padding: 6px 9px;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .top-bar {
+        height: 54px;
+    }
+
+    .logo {
+        font-size: 12px;
+
+        letter-spacing: 1.5px;
+    }
+
+    #systemStatus,
+    .system-status {
+        font-size: 8px;
+    }
+
+    .control-panel > button {
+        min-width: 78px;
+
+        font-size: 8px;
+    }
+
+    .writing-color-panel {
+        padding: 6px 8px;
+    }
+
+    .writing-color {
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+    }
+
+    #writingColor {
+        width: 25px !important;
+        height: 25px !important;
+        min-width: 25px !important;
+    }
+
+    .system-info {
+        display: none;
+    }
+}
+
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration:
+            0.01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        transition-duration:
+            0.01ms !important;
+    }
+}

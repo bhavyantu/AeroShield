@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AeroShield AI - Iron Man Interface</title>
+
+    <!-- =========================
+         CSS
+         ========================= -->
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hud.css">
+    <link rel="stylesheet" href="css/shield.css">
+    <link rel="stylesheet" href="css/animations.css">
+
+</head>
+
+
+<body>
+
+    <!-- =========================
+         MAIN APPLICATION
+         ========================= -->
+
+    <div id="app">
+
+
+        <!-- =========================
+             TOP BAR
+             ========================= -->
+
+        <header class="top-bar">
+
+            <div class="logo">
+                AEROSHIELD AI
+            </div>
+
+            <div class="system-status">
+
+                SYSTEM:
+                <span id="systemStatus">
+                    OFFLINE
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             CAMERA AREA
+             ========================= -->
+
+        <main class="camera-container">
+
+
+            <!-- CAMERA -->
+
+            <video
+                id="camera"
+                autoplay
+                playsinline>
+            </video>
+
+
+            <!-- EFFECT CANVAS -->
+
+            <canvas
+                id="effectCanvas">
+            </canvas>
+
+
+            <!-- AIR WRITING CANVAS -->
+
+            <canvas
+                id="writingCanvas">
+            </canvas>
+
+
+            <!-- =========================
+                 HUD
+                 ========================= -->
+
+            <div id="hud">
+
+
+                <!-- TOP LEFT -->
+
+                <div class="hud-corner top-left">
+
+                    <span>
+                        AI HAND TRACKING
+                    </span>
+
+                </div>
+
+
+                <!-- TOP RIGHT -->
+
+                <div class="hud-corner top-right">
+
+                    <span id="handCount">
+                        HANDS: 0
+                    </span>
+
+                </div>
+
+
+                <!-- BOTTOM LEFT -->
+
+                <div class="hud-corner bottom-left">
+
+                    <span>
+
+                        MODE:
+
+                        <strong id="mode">
+                            STANDBY
+                        </strong>
+
+                    </span>
+
+                </div>
+
+
+                <!-- BOTTOM RIGHT -->
+
+                <div class="hud-corner bottom-right">
+
+                    <span>
+                        AEROSHIELD AI
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 SHIELD CONTAINER
+                 ========================= -->
+
+            <div id="shieldContainer">
+
+
+                <!-- ONE HAND - LEFT -->
+
+                <div
+                    id="leftShield"
+                    class="shield hidden">
+                </div>
+
+
+                <!-- ONE HAND - RIGHT -->
+
+                <div
+                    id="rightShield"
+                    class="shield hidden">
+                </div>
+
+
+                <!-- TWO HANDS - BIG SHIELD -->
+
+                <div
+                    id="bigShield"
+                    class="big-shield hidden">
+                </div>
+
+
+            </div>
+
+        </main>
+
+
+        <!-- =========================
+             CONTROL PANEL
+             ========================= -->
+
+        <section class="control-panel">
+
+
+            <!-- START SYSTEM -->
+
+            <button
+                id="startCamera"
+                type="button">
+
+                START SYSTEM
+
+            </button>
+
+
+            <!-- AIR WRITE -->
+
+            <button
+                id="airWriteButton"
+                type="button">
+
+                AIR WRITE
+
+            </button>
+
+
+            <!-- SHIELD MODE -->
+
+            <button
+                id="shieldButton"
+                type="button">
+
+                SHIELD MODE
+
+            </button>
+
+
+            <!-- CLEAR -->
+
+            <button
+                id="clearButton"
+                type="button">
+
+                CLEAR
+
+            </button>
+
+
+            <!-- =========================
+                 AIR WRITING COLOR
+                 ========================= -->
+
+            <div class="writing-color-panel">
+
+
+                <span class="writing-color-label">
+                    PEN
+                </span>
+
+
+                <div class="writing-color-options">
+
+
+                    <!-- CYAN -->
+
+                    <button
+                        type="button"
+                        class="writing-color blue selected"
+                        data-writing-color="#00f6ff"
+                        title="Cyan">
+                    </button>
+
+
+                    <!-- GREEN -->
+
+                    <button
+                        type="button"
+                        class="writing-color green"
+                        data-writing-color="#00ff66"
+                        title="Green">
+                    </button>
+
+
+                    <!-- RED -->
+
+                    <button
+                        type="button"
+                        class="writing-color red"
+                        data-writing-color="#ff304f"
+                        title="Red">
+                    </button>
+
+
+                    <!-- PURPLE -->
+
+                    <button
+                        type="button"
+                        class="writing-color purple"
+                        data-writing-color="#b84cff"
+                        title="Purple">
+                    </button>
+
+
+                    <!-- YELLOW -->
+
+                    <button
+                        type="button"
+                        class="writing-color yellow"
+                        data-writing-color="#ffe600"
+                        title="Yellow">
+                    </button>
+
+
+                    <!-- WHITE -->
+
+                    <button
+                        type="button"
+                        class="writing-color white"
+                        data-writing-color="#ffffff"
+                        title="White">
+                    </button>
+
+
+                    <!-- CUSTOM COLOR -->
+
+                    <input
+                        type="color"
+                        id="writingColor"
+                        value="#00f6ff"
+                        title="Custom color">
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             SYSTEM INFORMATION
+             ========================= -->
+
+        <section class="system-info">
+
+
+            <!-- HANDS -->
+
+            <div class="info-card">
+
+                <span class="label">
+                    HANDS
+                </span>
+
+                <span
+                    id="handsDetected"
+                    class="value">
+
+                    0
+
+                </span>
+
+            </div>
+
+
+            <!-- MODE -->
+
+            <div class="info-card">
+
+                <span class="label">
+                    MODE
+                </span>
+
+                <span
+                    id="currentMode"
+                    class="value">
+
+                    STANDBY
+
+                </span>
+
+            </div>
+
+
+            <!-- SHIELD -->
+
+            <div class="info-card">
+
+                <span class="label">
+                    SHIELD
+                </span>
+
+                <span
+                    id="shieldStatus"
+                    class="value">
+
+                    OFF
+
+                </span>
+
+            </div>
+
+
+        </section>
+
+
+    </div>
+
+
+    <!-- =========================================
+         MEDIAPIPE LIBRARIES
+         ========================================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+
+    <!-- =========================================
+         AEROSHIELD AI JAVASCRIPT
+         ========================================= -->
+
+    <script src="js/camera.js"></script>
+
+    <script src="js/handLandmarks.js"></script>
+
+    <script src="js/handTracking.js"></script>
+
+    <script src="js/gestureDetection.js"></script>
+
+    <script src="js/airWriting.js"></script>
+
+    <script src="js/shieldManager.js"></script>
+
+    <script src="js/smallShield.js"></script>
+
+    <script src="js/bigShield.js"></script>
+
+    <script src="js/holographicRings.js"></script>
+
+    <script src="js/shieldParticles.js"></script>
+
+    <script src="js/repulsor.js"></script>
+
+    <script src="js/hud.js"></script>
+
+    <script src="js/effects.js"></script>
+
+    <script src="js/audio.js"></script>
+
+    <script src="js/app.js"></script>
+
+
+</body>
+
+</html>
