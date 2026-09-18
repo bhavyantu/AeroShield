@@ -1,224 +1,161 @@
-// =========================================
-// AEROSHIELD AI
-// AIR WRITING MODULE
-// INDEX-TIP PEN + COLOR + GLOW
-// =========================================
+/* =========================================================
+   AEROSHIELD AI
+   AIR WRITING SYSTEM
+   NORMAL / NON-REVERSED WRITING
+   ========================================================= */
 
+const writingCanvas = document.getElementById("writingCanvas");
 
-// =========================================
-// CANVAS
-// =========================================
-
-const writingCanvas =
-    document.getElementById("writingCanvas");
-
-const writingContext =
-    writingCanvas
-        ? writingCanvas.getContext("2d")
-        : null;
-
-
-// =========================================
-// AIR WRITING STATE
-// =========================================
+const writingContext = writingCanvas
+    ? writingCanvas.getContext("2d")
+    : null;
 
 let isWriting = false;
-
 let previousPoint = null;
 
 let currentWritingColor = "#00f6ff";
-
 let writingLineWidth = 5;
 
 
-// =========================================
-// SMOOTHING
-// =========================================
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
 
-let smoothPoint = null;
+function initializeWritingCanvas() {
 
-const SMOOTHING_FACTOR = 0.35;
-
-
-// =========================================
-// GLOWING PEN TIP
-// =========================================
-
-let penTipElement = null;
-
-
-// =========================================
-// CREATE PEN TIP
-// =========================================
-
-function createPenTip() {
-
-    if (penTipElement) {
+    if (!writingCanvas || !writingContext) {
+        console.warn("Writing canvas not found.");
         return;
     }
 
+    resizeWritingCanvas();
 
-    penTipElement =
-        document.createElement("div");
+    writingContext.lineCap = "round";
+    writingContext.lineJoin = "round";
+    writingContext.lineWidth = writingLineWidth;
+    writingContext.strokeStyle = currentWritingColor;
+    writingContext.shadowColor = currentWritingColor;
+    writingContext.shadowBlur = 12;
 
-    penTipElement.id =
-        "airWritingPenTip";
-
-
-    penTipElement.style.position =
-        "fixed";
-
-    penTipElement.style.width =
-        "18px";
-
-    penTipElement.style.height =
-        "18px";
-
-    penTipElement.style.borderRadius =
-        "50%";
-
-    penTipElement.style.pointerEvents =
-        "none";
-
-    penTipElement.style.zIndex =
-        "200";
-
-    penTipElement.style.display =
-        "none";
-
-    penTipElement.style.transform =
-        "translate(-50%, -50%)";
-
-    penTipElement.style.background =
-        currentWritingColor;
-
-    penTipElement.style.boxShadow =
-        `
-        0 0 5px ${currentWritingColor},
-        0 0 12px ${currentWritingColor},
-        0 0 25px ${currentWritingColor},
-        0 0 45px ${currentWritingColor}
-        `;
-
-
-    document.body.appendChild(
-        penTipElement
-    );
+    console.log("Air Writing initialized.");
 }
 
 
-// =========================================
-// UPDATE PEN TIP COLOR
-// =========================================
+/* =========================================================
+   RESIZE
+   ========================================================= */
 
-function updatePenTipColor() {
+function resizeWritingCanvas() {
 
-    if (!penTipElement) {
+    if (!writingCanvas || !writingContext) {
         return;
     }
 
+    const rect = writingCanvas.getBoundingClientRect();
 
-    penTipElement.style.background =
-        currentWritingColor;
-
-    penTipElement.style.boxShadow =
-        `
-        0 0 5px ${currentWritingColor},
-        0 0 12px ${currentWritingColor},
-        0 0 25px ${currentWritingColor},
-        0 0 45px ${currentWritingColor}
-        `;
-}
-
-
-// =========================================
-// SHOW PEN TIP
-// =========================================
-
-function showPenTip(point) {
-
-    if (!penTipElement || !point) {
+    if (rect.width === 0 || rect.height === 0) {
         return;
     }
 
+    /*
+       Save existing drawing before resizing.
+    */
 
-    penTipElement.style.display =
-        "block";
+    const oldCanvas = document.createElement("canvas");
 
+    oldCanvas.width = writingCanvas.width;
+    oldCanvas.height = writingCanvas.height;
 
-    penTipElement.style.left =
-        `${point.x}px`;
+    const oldContext = oldCanvas.getContext("2d");
 
-    penTipElement.style.top =
-        `${point.y}px`;
-}
-
-
-// =========================================
-// HIDE PEN TIP
-// =========================================
-
-function hidePenTip() {
-
-    if (!penTipElement) {
-        return;
+    if (
+        writingCanvas.width > 0 &&
+        writingCanvas.height > 0
+    ) {
+        oldContext.drawImage(
+            writingCanvas,
+            0,
+            0
+        );
     }
 
+    /*
+       Set new canvas size.
+    */
 
-    penTipElement.style.display =
-        "none";
+    writingCanvas.width = rect.width;
+    writingCanvas.height = rect.height;
+
+    /*
+       Restore drawing settings.
+    */
+
+    writingContext.lineCap = "round";
+    writingContext.lineJoin = "round";
+    writingContext.lineWidth = writingLineWidth;
+    writingContext.strokeStyle = currentWritingColor;
+    writingContext.shadowColor = currentWritingColor;
+    writingContext.shadowBlur = 12;
+
+    /*
+       Restore old drawing.
+    */
+
+    if (
+        oldCanvas.width > 0 &&
+        oldCanvas.height > 0
+    ) {
+
+        writingContext.drawImage(
+            oldCanvas,
+            0,
+            0,
+            oldCanvas.width,
+            oldCanvas.height,
+            0,
+            0,
+            writingCanvas.width,
+            writingCanvas.height
+        );
+    }
 }
 
 
-// =========================================
-// SMOOTH POINT
-// =========================================
+/* =========================================================
+   CONVERT MEDIAPIPE POSITION TO CANVAS
+   =========================================================
 
-function getSmoothPoint(point) {
+   IMPORTANT:
 
-    if (!point) {
+   We are NOT using:
+
+       scaleX(-1)
+
+   on the writing canvas.
+
+   We also do NOT flip the MediaPipe X coordinate here.
+
+   MediaPipe coordinates are used directly.
+
+   This prevents double mirroring.
+   ========================================================= */
+
+function convertToCanvasPoint(landmark) {
+
+    if (!landmark || !writingCanvas) {
         return null;
     }
 
-
-    if (!smoothPoint) {
-
-        smoothPoint = {
-            x: point.x,
-            y: point.y
-        };
-
-        return {
-            x: point.x,
-            y: point.y
-        };
-    }
-
-
-    smoothPoint.x +=
-        (
-            point.x -
-            smoothPoint.x
-        ) * SMOOTHING_FACTOR;
-
-
-    smoothPoint.y +=
-        (
-            point.y -
-            smoothPoint.y
-        ) * SMOOTHING_FACTOR;
-
-
     return {
-        x: smoothPoint.x,
-        y: smoothPoint.y
+        x: landmark.x * writingCanvas.width,
+        y: landmark.y * writingCanvas.height
     };
 }
 
 
-// =========================================
-// START WRITING
-// =========================================
+/* =========================================================
+   START WRITING
+   ========================================================= */
 
 function startAirWriting(point) {
 
@@ -226,25 +163,44 @@ function startAirWriting(point) {
         return;
     }
 
-
     isWriting = true;
-
 
     previousPoint = {
         x: point.x,
         y: point.y
     };
+
+    writingContext.beginPath();
+
+    writingContext.moveTo(
+        point.x,
+        point.y
+    );
+
+    writingContext.lineWidth =
+        writingLineWidth;
+
+    writingContext.strokeStyle =
+        currentWritingColor;
+
+    writingContext.shadowColor =
+        currentWritingColor;
+
+    writingContext.shadowBlur = 14;
+
+    if (
+        typeof playAirWritingSound === "function"
+    ) {
+        playAirWritingSound();
+    }
 }
 
 
-// =========================================
-// DRAW AIR LINE
-// =========================================
+/* =========================================================
+   DRAW LINE
+   ========================================================= */
 
-function drawAirLine(
-    point1,
-    point2
-) {
+function drawAirLine(point1, point2) {
 
     if (
         !writingContext ||
@@ -254,67 +210,38 @@ function drawAirLine(
         return;
     }
 
-
     writingContext.beginPath();
-
 
     writingContext.moveTo(
         point1.x,
         point1.y
     );
 
-
     writingContext.lineTo(
         point2.x,
         point2.y
     );
 
-
-    // =====================================
-    // PEN STYLE
-    // =====================================
+    writingContext.lineWidth =
+        writingLineWidth;
 
     writingContext.strokeStyle =
         currentWritingColor;
 
-
-    writingContext.lineWidth =
-        writingLineWidth;
-
-
-    writingContext.lineCap =
-        "round";
-
-
-    writingContext.lineJoin =
-        "round";
-
-
-    // =====================================
-    // HOLOGRAPHIC GLOW
-    // =====================================
-
-    writingContext.shadowBlur =
-        18;
-
     writingContext.shadowColor =
         currentWritingColor;
 
+    writingContext.shadowBlur = 14;
 
     writingContext.stroke();
 
-
     writingContext.closePath();
-
-
-    // Reset shadow
-    writingContext.shadowBlur = 0;
 }
 
 
-// =========================================
-// STOP WRITING
-// =========================================
+/* =========================================================
+   STOP WRITING
+   ========================================================= */
 
 function stopAirWriting() {
 
@@ -322,85 +249,15 @@ function stopAirWriting() {
 
     previousPoint = null;
 
-    smoothPoint = null;
-}
-
-
-// =========================================
-// CONVERT MEDIAPIPE → CANVAS
-// =========================================
-
-function convertToCanvasPoint(
-    landmark
-) {
-
-    if (
-        !landmark ||
-        !writingCanvas
-    ) {
-        return null;
+    if (writingContext) {
+        writingContext.closePath();
     }
-
-
-    return {
-
-        // Camera preview is mirrored
-        x:
-            (1 - landmark.x) *
-            writingCanvas.width,
-
-        y:
-            landmark.y *
-            writingCanvas.height
-    };
 }
 
 
-// =========================================
-// CONVERT CANVAS → SCREEN
-// =========================================
-
-function convertCanvasToScreen(
-    point
-) {
-
-    if (
-        !point ||
-        !writingCanvas
-    ) {
-        return null;
-    }
-
-
-    const rect =
-        writingCanvas.getBoundingClientRect();
-
-
-    const scaleX =
-        rect.width /
-        writingCanvas.width;
-
-    const scaleY =
-        rect.height /
-        writingCanvas.height;
-
-
-    return {
-
-        x:
-            rect.left +
-            point.x * scaleX,
-
-        y:
-            rect.top +
-            point.y * scaleY
-    };
-}
-
-
-// =========================================
-// PROCESS AIR WRITING
-// =========================================
+/* =========================================================
+   PROCESS AIR WRITING
+   ========================================================= */
 
 function processAirWriting(results) {
 
@@ -411,135 +268,92 @@ function processAirWriting(results) {
         return;
     }
 
+    if (
+        !results ||
+        !results.multiHandLandmarks
+    ) {
+        stopAirWriting();
+        return;
+    }
 
     const hands =
-        results &&
-        Array.isArray(
-            results.multiHandLandmarks
-        )
-            ? results.multiHandLandmarks
-            : [];
+        results.multiHandLandmarks;
 
-
-    // =====================================
-    // NO HAND
-    // =====================================
+    /*
+       No hand.
+    */
 
     if (hands.length === 0) {
-
         stopAirWriting();
+        return;
+    }
 
-        hidePenTip();
+    /*
+       Use first detected hand.
+    */
 
+    const hand = hands[0];
+
+    if (!hand) {
+        stopAirWriting();
         return;
     }
 
 
-    // =====================================
-    // FIRST HAND
-    // =====================================
-
-    const hand =
-        hands[0];
-
-
-    // =====================================
-    // GET GESTURE
-    // =====================================
-
-    const gesture =
-        detectHandGesture(hand);
-
-
-    // =====================================
-    // INDEX FINGER ONLY
-    // =====================================
+    /* =====================================================
+       GESTURE CHECK
+       ===================================================== */
 
     if (
-        gesture !==
-        GESTURES.POINTING
+        typeof detectHandGesture === "function"
     ) {
 
-        stopAirWriting();
+        const gesture =
+            detectHandGesture(hand);
 
-        hidePenTip();
+        /*
+           Only pointing gesture writes.
+        */
 
-        return;
+        if (
+            typeof GESTURES !== "undefined" &&
+            gesture !== GESTURES.POINTING
+        ) {
+            stopAirWriting();
+            return;
+        }
     }
 
 
-    // =====================================
-    // INDEX FINGERTIP
-    // MEDIAPIPE LANDMARK 8
-    // =====================================
+    /* =====================================================
+       INDEX FINGERTIP
+       MediaPipe landmark 8
+       ===================================================== */
 
-    const indexTip =
-        hand[
-            HAND_LANDMARKS.INDEX_TIP
-        ];
-
+    const indexTip = hand[8];
 
     if (!indexTip) {
-
         stopAirWriting();
-
-        hidePenTip();
-
         return;
     }
 
 
-    // =====================================
-    // RAW CANVAS POINT
-    // =====================================
-
-    const rawPoint =
-        convertToCanvasPoint(
-            indexTip
-        );
-
-
-    if (!rawPoint) {
-        return;
-    }
-
-
-    // =====================================
-    // SMOOTH INDEX TIP
-    // =====================================
+    /* =====================================================
+       GET CANVAS POSITION
+       ===================================================== */
 
     const currentPoint =
-        getSmoothPoint(
-            rawPoint
-        );
-
+        convertToCanvasPoint(indexTip);
 
     if (!currentPoint) {
+        stopAirWriting();
         return;
     }
 
 
-    // =====================================
-    // GLOWING PEN TIP
-    // =====================================
-
-    const screenPoint =
-        convertCanvasToScreen(
-            currentPoint
-        );
-
-
-    if (screenPoint) {
-
-        showPenTip(
-            screenPoint
-        );
-    }
-
-
-    // =====================================
-    // FIRST WRITING POINT
-    // =====================================
+    /* =====================================================
+       START
+       ===================================================== */
 
     if (!isWriting) {
 
@@ -551,9 +365,9 @@ function processAirWriting(results) {
     }
 
 
-    // =====================================
-    // DRAW
-    // =====================================
+    /* =====================================================
+       CONTINUE DRAWING
+       ===================================================== */
 
     if (previousPoint) {
 
@@ -563,23 +377,16 @@ function processAirWriting(results) {
         );
     }
 
-
-    // =====================================
-    // SAVE POINT
-    // =====================================
-
     previousPoint = {
-
         x: currentPoint.x,
-
         y: currentPoint.y
     };
 }
 
 
-// =========================================
-// CLEAR WRITING
-// =========================================
+/* =========================================================
+   CLEAR
+   ========================================================= */
 
 function clearAirWriting() {
 
@@ -590,7 +397,6 @@ function clearAirWriting() {
         return;
     }
 
-
     writingContext.clearRect(
         0,
         0,
@@ -598,19 +404,21 @@ function clearAirWriting() {
         writingCanvas.height
     );
 
-
     stopAirWriting();
 
+    if (
+        typeof playClickSound === "function"
+    ) {
+        playClickSound();
+    }
 
-    console.log(
-        "Air writing cleared."
-    );
+    console.log("Air writing cleared.");
 }
 
 
-// =========================================
-// SET WRITING COLOR
-// =========================================
+/* =========================================================
+   SET COLOR
+   ========================================================= */
 
 function setWritingColor(color) {
 
@@ -618,13 +426,16 @@ function setWritingColor(color) {
         return;
     }
 
+    currentWritingColor = color;
 
-    currentWritingColor =
-        color;
+    if (writingContext) {
 
+        writingContext.strokeStyle =
+            currentWritingColor;
 
-    updatePenTipColor();
-
+        writingContext.shadowColor =
+            currentWritingColor;
+    }
 
     console.log(
         "Writing color:",
@@ -633,190 +444,105 @@ function setWritingColor(color) {
 }
 
 
-// =========================================
-// SET LINE WIDTH
-// =========================================
+/* =========================================================
+   GET COLOR
+   ========================================================= */
+
+function getWritingColor() {
+
+    return currentWritingColor;
+}
+
+
+/* =========================================================
+   SET LINE WIDTH
+   ========================================================= */
 
 function setWritingLineWidth(width) {
 
+    const value = Number(width);
+
     if (
-        typeof width !== "number" ||
-        width <= 0
+        !Number.isFinite(value) ||
+        value <= 0
     ) {
         return;
     }
 
+    writingLineWidth = value;
 
-    writingLineWidth =
-        width;
+    if (writingContext) {
+        writingContext.lineWidth =
+            writingLineWidth;
+    }
 }
 
 
-// =========================================
-// GET WRITING STATE
-// =========================================
+/* =========================================================
+   GET STATE
+   ========================================================= */
 
 function getWritingState() {
 
     return {
-
-        isWriting:
-            isWriting,
-
-        color:
-            currentWritingColor,
-
-        lineWidth:
-            writingLineWidth,
-
-        previousPoint:
-            previousPoint
+        isWriting: isWriting,
+        color: currentWritingColor,
+        lineWidth: writingLineWidth
     };
 }
 
 
-// =========================================
-// COLOR PICKER
-// =========================================
-
-function initializeWritingColorPicker() {
-
-    const colorPicker =
-        document.getElementById(
-            "writingColor"
-        );
-
-
-    if (!colorPicker) {
-        return;
-    }
-
-
-    // Initial color
-    colorPicker.value =
-        currentWritingColor;
-
-
-    colorPicker.addEventListener(
-        "input",
-        function () {
-
-            setWritingColor(
-                this.value
-            );
-        }
-    );
-}
-
-
-// =========================================
-// QUICK COLORS
-// =========================================
-
-function initializeQuickColors() {
-
-    const colorButtons =
-        document.querySelectorAll(
-            "[data-writing-color]"
-        );
-
-
-    colorButtons.forEach(
-        function (button) {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    const color =
-                        this.dataset.writingColor;
-
-
-                    setWritingColor(
-                        color
-                    );
-
-
-                    const colorPicker =
-                        document.getElementById(
-                            "writingColor"
-                        );
-
-
-                    if (colorPicker) {
-
-                        colorPicker.value =
-                            color;
-                    }
-
-
-                    colorButtons.forEach(
-                        function (item) {
-
-                            item.classList.remove(
-                                "selected"
-                            );
-                        }
-                    );
-
-
-                    button.classList.add(
-                        "selected"
-                    );
-                }
-            );
-        }
-    );
-}
-
-
-// =========================================
-// CLEAR BUTTON
-// =========================================
-
-function initializeClearButton() {
-
-    const clearButton =
-        document.getElementById(
-            "clearButton"
-        );
-
-
-    if (!clearButton) {
-        return;
-    }
-
-
-    clearButton.addEventListener(
-        "click",
-        clearAirWriting
-    );
-}
-
-
-// =========================================
-// INITIALIZE
-// =========================================
+/* =========================================================
+   WINDOW RESIZE
+   ========================================================= */
 
 window.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        createPenTip();
-
-        initializeWritingColorPicker();
-
-        initializeQuickColors();
-
-        initializeClearButton();
-
-
-        console.log(
-            "Air Writing initialized."
-        );
-
-        console.log(
-            "Index fingertip writing enabled."
-        );
+    "resize",
+    () => {
+        resizeWritingCanvas();
     }
 );
+
+
+/* =========================================================
+   DOM READY
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        initializeWritingCanvas();
+    }
+);
+
+
+/* =========================================================
+   GLOBAL FUNCTIONS
+   ========================================================= */
+
+window.startAirWriting =
+    startAirWriting;
+
+window.stopAirWriting =
+    stopAirWriting;
+
+window.processAirWriting =
+    processAirWriting;
+
+window.clearAirWriting =
+    clearAirWriting;
+
+window.setWritingColor =
+    setWritingColor;
+
+window.getWritingColor =
+    getWritingColor;
+
+window.setWritingLineWidth =
+    setWritingLineWidth;
+
+window.getWritingState =
+    getWritingState;
+
+window.convertToCanvasPoint =
+    convertToCanvasPoint;
