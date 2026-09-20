@@ -2,6 +2,7 @@
 // AEROSHIELD AI - MAIN APPLICATION
 // ============================================
 
+
 // ============================================
 // APPLICATION STATE
 // ============================================
@@ -41,6 +42,11 @@ const clearButton =
     document.getElementById("clearButton");
 
 
+// IMPORTANT:
+// Do NOT declare startCameraButton here.
+// camera.js already handles the START SYSTEM button.
+
+
 // ============================================
 // INITIALIZE APPLICATION
 // ============================================
@@ -62,6 +68,7 @@ function initializeApp() {
     ) {
 
         initializeAirWriting();
+
     }
 
 
@@ -75,6 +82,7 @@ function initializeApp() {
     ) {
 
         initializeSmallShield();
+
     }
 
 
@@ -88,6 +96,7 @@ function initializeApp() {
     ) {
 
         initializeBigShield();
+
     }
 
 
@@ -101,6 +110,7 @@ function initializeApp() {
     ) {
 
         initializeShieldParticles();
+
     }
 
 
@@ -114,6 +124,7 @@ function initializeApp() {
     ) {
 
         initializeRepulsor();
+
     }
 
 
@@ -127,11 +138,12 @@ function initializeApp() {
     ) {
 
         initializeHolographicRings();
+
     }
 
 
     // ========================================
-    // EFFECT CANVAS
+    // EFFECTS
     // ========================================
 
     if (
@@ -140,6 +152,7 @@ function initializeApp() {
     ) {
 
         initializeEffects();
+
     }
 
 
@@ -153,6 +166,7 @@ function initializeApp() {
     ) {
 
         initializeHUD();
+
     }
 
 
@@ -166,6 +180,7 @@ function initializeApp() {
     ) {
 
         initializeCamera();
+
     }
 
 
@@ -179,22 +194,29 @@ function initializeApp() {
     ) {
 
         initializeHandTracking();
+
     }
 
 
     // ========================================
-    // BUTTON EVENTS
+    // APPLICATION CONTROLS
     // ========================================
 
     setupAppControls();
 
 
     // ========================================
-    // INITIAL STATE
+    // WRITING COLOR CONTROLS
     // ========================================
 
-    appState.initialized =
-        true;
+    setupWritingColorControls();
+
+
+    // ========================================
+    // APPLICATION READY
+    // ========================================
+
+    appState.initialized = true;
 
     updateAppUI();
 
@@ -206,7 +228,7 @@ function initializeApp() {
 
 
 // ============================================
-// SETUP CONTROLS
+// SETUP APPLICATION CONTROLS
 // ============================================
 
 function setupAppControls() {
@@ -226,6 +248,7 @@ function setupAppControls() {
 
             }
         );
+
     }
 
 
@@ -243,6 +266,7 @@ function setupAppControls() {
 
             }
         );
+
     }
 
 
@@ -260,7 +284,175 @@ function setupAppControls() {
 
             }
         );
+
     }
+
+}
+
+
+// ============================================
+// WRITING COLOR CONTROLS
+// ============================================
+
+function setupWritingColorControls() {
+
+    const colorButtons =
+        document.querySelectorAll(
+            ".writing-color"
+        );
+
+
+    const customColor =
+        document.getElementById(
+            "writingColor"
+        );
+
+
+    // ========================================
+    // PRESET COLORS
+    // ========================================
+
+    colorButtons.forEach(
+        (button) => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const color =
+                        button.getAttribute(
+                            "data-writing-color"
+                        );
+
+
+                    if (!color) {
+
+                        return;
+
+                    }
+
+
+                    // Send color to airWriting.js
+
+                    if (
+                        typeof setWritingColor ===
+                        "function"
+                    ) {
+
+                        setWritingColor(
+                            color
+                        );
+
+                    }
+
+
+                    // Update custom color picker
+
+                    if (customColor) {
+
+                        customColor.value =
+                            color;
+
+                    }
+
+
+                    // Remove selected class
+
+                    colorButtons.forEach(
+                        (item) => {
+
+                            item.classList.remove(
+                                "selected"
+                            );
+
+                        }
+                    );
+
+
+                    // Select current color
+
+                    button.classList.add(
+                        "selected"
+                    );
+
+
+                    console.log(
+                        "Writing color selected:",
+                        color
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    // ========================================
+    // CUSTOM COLOR
+    // ========================================
+
+    if (customColor) {
+
+        customColor.addEventListener(
+            "input",
+            () => {
+
+                const color =
+                    customColor.value;
+
+
+                if (
+                    typeof setWritingColor ===
+                    "function"
+                ) {
+
+                    setWritingColor(
+                        color
+                    );
+
+                }
+
+
+                // Remove preset selection
+
+                colorButtons.forEach(
+                    (button) => {
+
+                        button.classList.remove(
+                            "selected"
+                        );
+
+                    }
+                );
+
+
+                console.log(
+                    "Custom writing color:",
+                    color
+                );
+
+            }
+        );
+
+    }
+
+
+    // ========================================
+    // DEFAULT COLOR
+    // ========================================
+
+    if (
+        typeof setWritingColor ===
+        "function"
+    ) {
+
+        setWritingColor(
+            "#00f6ff"
+        );
+
+    }
+
 }
 
 
@@ -274,6 +466,10 @@ function toggleAirWritingMode() {
         !appState.airWritingEnabled;
 
 
+    // ========================================
+    // ENABLE
+    // ========================================
+
     if (
         appState.airWritingEnabled
     ) {
@@ -284,9 +480,17 @@ function toggleAirWritingMode() {
         ) {
 
             enableAirWriting();
+
         }
 
-    } else {
+    }
+
+
+    // ========================================
+    // DISABLE
+    // ========================================
+
+    else {
 
         if (
             typeof disableAirWriting ===
@@ -294,12 +498,28 @@ function toggleAirWritingMode() {
         ) {
 
             disableAirWriting();
+
         }
+
+
+        if (
+            typeof stopAirWriting ===
+            "function"
+        ) {
+
+            stopAirWriting();
+
+        }
+
     }
 
 
     updateAppUI();
 
+
+    // ========================================
+    // CLICK SOUND
+    // ========================================
 
     if (
         typeof playClickSound ===
@@ -307,6 +527,7 @@ function toggleAirWritingMode() {
     ) {
 
         playClickSound();
+
     }
 
 
@@ -316,6 +537,7 @@ function toggleAirWritingMode() {
             ? "ON"
             : "OFF"
     );
+
 }
 
 
@@ -329,6 +551,10 @@ function toggleShieldMode() {
         !appState.shieldEnabled;
 
 
+    // ========================================
+    // ENABLE SHIELD
+    // ========================================
+
     if (
         appState.shieldEnabled
     ) {
@@ -339,9 +565,17 @@ function toggleShieldMode() {
         ) {
 
             enableShield();
+
         }
 
-    } else {
+    }
+
+
+    // ========================================
+    // DISABLE SHIELD
+    // ========================================
+
+    else {
 
         if (
             typeof disableShield ===
@@ -349,20 +583,23 @@ function toggleShieldMode() {
         ) {
 
             disableShield();
+
         }
+
+
+        if (
+            typeof hideAllShields ===
+            "function"
+        ) {
+
+            hideAllShields();
+
+        }
+
     }
 
 
     updateAppUI();
-
-
-    if (
-        typeof playShieldSound ===
-        "function"
-    ) {
-
-        playShieldSound();
-    }
 
 
     console.log(
@@ -371,14 +608,20 @@ function toggleShieldMode() {
             ? "ON"
             : "OFF"
     );
+
 }
 
 
 // ============================================
-// CLEAR CANVAS
+// CLEAR APPLICATION CANVAS
 // ============================================
 
 function clearApplicationCanvas() {
+
+
+    // ========================================
+    // CLEAR AIR WRITING
+    // ========================================
 
     if (
         typeof clearAirWriting ===
@@ -387,7 +630,9 @@ function clearApplicationCanvas() {
 
         clearAirWriting();
 
-    } else if (
+    }
+
+    else if (
         appWritingCanvas
     ) {
 
@@ -396,14 +641,24 @@ function clearApplicationCanvas() {
                 "2d"
             );
 
-        ctx.clearRect(
-            0,
-            0,
-            appWritingCanvas.width,
-            appWritingCanvas.height
-        );
+
+        if (ctx) {
+
+            ctx.clearRect(
+                0,
+                0,
+                appWritingCanvas.width,
+                appWritingCanvas.height
+            );
+
+        }
+
     }
 
+
+    // ========================================
+    // CLEAR EFFECTS
+    // ========================================
 
     if (
         typeof clearEffectsCanvas ===
@@ -412,7 +667,9 @@ function clearApplicationCanvas() {
 
         clearEffectsCanvas();
 
-    } else if (
+    }
+
+    else if (
         appCanvas
     ) {
 
@@ -421,14 +678,24 @@ function clearApplicationCanvas() {
                 "2d"
             );
 
-        ctx.clearRect(
-            0,
-            0,
-            appCanvas.width,
-            appCanvas.height
-        );
+
+        if (ctx) {
+
+            ctx.clearRect(
+                0,
+                0,
+                appCanvas.width,
+                appCanvas.height
+            );
+
+        }
+
     }
 
+
+    // ========================================
+    // SOUND
+    // ========================================
 
     if (
         typeof playClickSound ===
@@ -436,28 +703,36 @@ function clearApplicationCanvas() {
     ) {
 
         playClickSound();
+
     }
 
 
     console.log(
         "Canvas cleared."
     );
+
 }
 
 
 // ============================================
 // HANDLE HAND RESULTS
 // ============================================
+// IMPORTANT:
+// handTracking.js calls this function.
+// This function MUST exist globally.
+// ============================================
 
 function handleHandResults(results) {
 
     if (!results) {
+
         return;
+
     }
 
 
     // ========================================
-    // UPDATE LANDMARK STATE
+    // UPDATE HAND LANDMARKS
     // ========================================
 
     if (
@@ -468,11 +743,12 @@ function handleHandResults(results) {
         updateHandLandmarks(
             results
         );
+
     }
 
 
     // ========================================
-    // UPDATE APPLICATION HAND COUNT
+    // UPDATE HAND COUNT
     // ========================================
 
     updateAppHandState();
@@ -494,9 +770,12 @@ function handleHandResults(results) {
             processAirWriting(
                 results
             );
+
         }
 
-    } else {
+    }
+
+    else {
 
         if (
             typeof stopAirWriting ===
@@ -504,7 +783,9 @@ function handleHandResults(results) {
         ) {
 
             stopAirWriting();
+
         }
+
     }
 
 
@@ -524,9 +805,12 @@ function handleHandResults(results) {
             updateShieldSystem(
                 results
             );
+
         }
 
-    } else {
+    }
+
+    else {
 
         if (
             typeof hideAllShields ===
@@ -534,7 +818,9 @@ function handleHandResults(results) {
         ) {
 
             hideAllShields();
+
         }
+
     }
 
 
@@ -550,6 +836,7 @@ function handleHandResults(results) {
         updateHUD(
             results
         );
+
     }
 
 
@@ -571,9 +858,12 @@ function handleHandResults(results) {
             updateHUDTarget(
                 results.multiHandLandmarks[0]
             );
+
         }
 
-    } else {
+    }
+
+    else {
 
         if (
             typeof hideTargetReticle ===
@@ -581,7 +871,9 @@ function handleHandResults(results) {
         ) {
 
             hideTargetReticle();
+
         }
+
     }
 
 
@@ -598,7 +890,9 @@ function handleHandResults(results) {
             results
         );
 
-    } else if (
+    }
+
+    else if (
         typeof processVisualEffects ===
         "function"
     ) {
@@ -606,15 +900,22 @@ function handleHandResults(results) {
         processVisualEffects(
             results
         );
+
     }
+
 }
 
 
 // ============================================
-// UPDATE HAND STATE
+// UPDATE APPLICATION HAND STATE
 // ============================================
 
 function updateAppHandState() {
+
+
+    // ========================================
+    // PRIMARY METHOD
+    // ========================================
 
     if (
         typeof getHandCount ===
@@ -625,10 +926,14 @@ function updateAppHandState() {
             getHandCount();
 
         return;
+
     }
 
 
-    // Fallback
+    // ========================================
+    // FALLBACK METHOD
+    // ========================================
+
     if (
         typeof getHandLandmarks ===
         "function"
@@ -637,16 +942,20 @@ function updateAppHandState() {
         const hands =
             getHandLandmarks();
 
+
         appState.handCount =
             Array.isArray(hands)
                 ? hands.length
                 : 0;
 
+
         return;
+
     }
 
 
     appState.handCount = 0;
+
 }
 
 
@@ -656,14 +965,24 @@ function updateAppHandState() {
 
 function updateAppUI() {
 
+
+    // ========================================
+    // AIR WRITE BUTTON
+    // ========================================
+
     if (airWriteButton) {
 
         airWriteButton.classList.toggle(
             "active",
             appState.airWritingEnabled
         );
+
     }
 
+
+    // ========================================
+    // SHIELD BUTTON
+    // ========================================
 
     if (shieldButton) {
 
@@ -671,11 +990,12 @@ function updateAppUI() {
             "active",
             appState.shieldEnabled
         );
+
     }
 
 
     // ========================================
-    // STATUS
+    // SYSTEM STATUS
     // ========================================
 
     const systemStatus =
@@ -693,25 +1013,126 @@ function updateAppUI() {
             systemStatus.textContent =
                 "SYSTEM: ONLINE";
 
+
             systemStatus.classList.add(
                 "online"
             );
 
-        } else {
+        }
+
+        else {
 
             systemStatus.textContent =
                 "SYSTEM: STANDBY";
 
+
             systemStatus.classList.remove(
                 "online"
             );
+
         }
+
     }
+
+
+    // ========================================
+    // HAND COUNT
+    // ========================================
+
+    const handCountElement =
+        document.getElementById(
+            "handCount"
+        );
+
+
+    if (handCountElement) {
+
+        handCountElement.textContent =
+            `HANDS: ${appState.handCount}`;
+
+    }
+
+
+    // ========================================
+    // HANDS DETECTED
+    // ========================================
+
+    const handsDetected =
+        document.getElementById(
+            "handsDetected"
+        );
+
+
+    if (handsDetected) {
+
+        handsDetected.textContent =
+            appState.handCount;
+
+    }
+
+
+    // ========================================
+    // CURRENT MODE
+    // ========================================
+
+    const currentMode =
+        document.getElementById(
+            "currentMode"
+        );
+
+
+    if (currentMode) {
+
+        currentMode.textContent =
+            appState.mode;
+
+    }
+
+
+    // ========================================
+    // MODE
+    // ========================================
+
+    const modeElement =
+        document.getElementById(
+            "mode"
+        );
+
+
+    if (modeElement) {
+
+        modeElement.textContent =
+            appState.mode;
+
+    }
+
+
+    // ========================================
+    // SHIELD STATUS
+    // ========================================
+
+    const shieldStatus =
+        document.getElementById(
+            "shieldStatus"
+        );
+
+
+    if (shieldStatus) {
+
+        shieldStatus.textContent =
+            appState.shieldEnabled
+                ? "ON"
+                : "OFF";
+
+    }
+
 }
 
 
 // ============================================
 // CAMERA STATE
+// ============================================
+// camera.js can call this.
 // ============================================
 
 function setCameraState(
@@ -734,7 +1155,12 @@ function setCameraState(
 
         appState.mode =
             "STANDBY";
+
+
+        updateAppUI();
+
     }
+
 }
 
 
@@ -760,7 +1186,23 @@ function setAppMode(
 
         modeElement.textContent =
             appState.mode;
+
     }
+
+
+    const currentMode =
+        document.getElementById(
+            "currentMode"
+        );
+
+
+    if (currentMode) {
+
+        currentMode.textContent =
+            appState.mode;
+
+    }
+
 }
 
 
@@ -773,6 +1215,7 @@ function getAppState() {
     return {
         ...appState
     };
+
 }
 
 
@@ -789,14 +1232,23 @@ function resetApplication() {
         "STANDBY";
 
 
+    // ========================================
+    // HIDE SHIELDS
+    // ========================================
+
     if (
         typeof hideAllShields ===
         "function"
     ) {
 
         hideAllShields();
+
     }
 
+
+    // ========================================
+    // HIDE TARGET
+    // ========================================
 
     if (
         typeof hideTargetReticle ===
@@ -804,8 +1256,13 @@ function resetApplication() {
     ) {
 
         hideTargetReticle();
+
     }
 
+
+    // ========================================
+    // CLEAR WRITING
+    // ========================================
 
     if (
         typeof clearAirWriting ===
@@ -813,8 +1270,13 @@ function resetApplication() {
     ) {
 
         clearAirWriting();
+
     }
 
+
+    // ========================================
+    // CLEAR EFFECTS
+    // ========================================
 
     if (
         typeof clearEffectsCanvas ===
@@ -822,8 +1284,13 @@ function resetApplication() {
     ) {
 
         clearEffectsCanvas();
+
     }
 
+
+    // ========================================
+    // UPDATE UI
+    // ========================================
 
     updateAppUI();
 
@@ -831,6 +1298,7 @@ function resetApplication() {
     console.log(
         "Application state reset."
     );
+
 }
 
 
@@ -847,11 +1315,12 @@ document.addEventListener(
         ) {
 
             return;
+
         }
 
 
-        // Re-sync UI when returning
         updateAppUI();
+
     }
 );
 
@@ -869,6 +1338,42 @@ window.addEventListener(
     }
 );
 
+
+// ============================================
+// GLOBAL EXPORTS
+// ============================================
+// Explicit exports make sure other modules
+// such as handTracking.js can access them.
+// ============================================
+
+window.handleHandResults =
+    handleHandResults;
+
+window.getAppState =
+    getAppState;
+
+window.setAppMode =
+    setAppMode;
+
+window.setCameraState =
+    setCameraState;
+
+window.resetApplication =
+    resetApplication;
+
+window.toggleAirWritingMode =
+    toggleAirWritingMode;
+
+window.toggleShieldMode =
+    toggleShieldMode;
+
+window.clearApplicationCanvas =
+    clearApplicationCanvas;
+
+
+// ============================================
+// MODULE LOADED
+// ============================================
 
 console.log(
     "AeroShield AI app module loaded successfully."

@@ -60,7 +60,6 @@
 
         <main class="camera-container">
 
-
             <!-- CAMERA -->
 
             <video
@@ -89,7 +88,6 @@
                  ========================= -->
 
             <div id="hud">
-
 
                 <!-- TOP LEFT -->
 
@@ -149,7 +147,6 @@
 
             <div id="shieldContainer">
 
-
                 <!-- ONE HAND - LEFT -->
 
                 <div
@@ -172,7 +169,6 @@
                     id="bigShield"
                     class="big-shield hidden">
                 </div>
-
 
             </div>
 
@@ -236,7 +232,6 @@
 
             <div class="writing-color-panel">
 
-
                 <span class="writing-color-label">
                     PEN
                 </span>
@@ -251,7 +246,8 @@
                         type="button"
                         class="writing-color blue selected"
                         data-writing-color="#00f6ff"
-                        title="Cyan">
+                        title="Cyan"
+                        aria-label="Select cyan">
                     </button>
 
 
@@ -261,7 +257,8 @@
                         type="button"
                         class="writing-color green"
                         data-writing-color="#00ff66"
-                        title="Green">
+                        title="Green"
+                        aria-label="Select green">
                     </button>
 
 
@@ -271,7 +268,8 @@
                         type="button"
                         class="writing-color red"
                         data-writing-color="#ff304f"
-                        title="Red">
+                        title="Red"
+                        aria-label="Select red">
                     </button>
 
 
@@ -281,7 +279,8 @@
                         type="button"
                         class="writing-color purple"
                         data-writing-color="#b84cff"
-                        title="Purple">
+                        title="Purple"
+                        aria-label="Select purple">
                     </button>
 
 
@@ -291,7 +290,8 @@
                         type="button"
                         class="writing-color yellow"
                         data-writing-color="#ffe600"
-                        title="Yellow">
+                        title="Yellow"
+                        aria-label="Select yellow">
                     </button>
 
 
@@ -301,7 +301,8 @@
                         type="button"
                         class="writing-color white"
                         data-writing-color="#ffffff"
-                        title="White">
+                        title="White"
+                        aria-label="Select white">
                     </button>
 
 
@@ -311,8 +312,8 @@
                         type="color"
                         id="writingColor"
                         value="#00f6ff"
-                        title="Custom color">
-
+                        title="Custom color"
+                        aria-label="Choose custom writing color">
 
                 </div>
 
@@ -418,6 +419,10 @@
 
     <script src="js/airWriting.js"></script>
 
+    <!-- Load audio before files that may call audio functions -->
+
+    <script src="js/audio.js"></script>
+
     <script src="js/shieldManager.js"></script>
 
     <script src="js/smallShield.js"></script>
@@ -434,9 +439,142 @@
 
     <script src="js/effects.js"></script>
 
-    <script src="js/audio.js"></script>
-
     <script src="js/app.js"></script>
+
+
+    <!-- =========================================
+         WRITING COLOR SELECTION
+         ========================================= -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const colorButtons =
+                document.querySelectorAll(".writing-color");
+
+            const customColor =
+                document.getElementById("writingColor");
+
+
+            /* ========================================
+               PRESET COLORS
+               ======================================== */
+
+            colorButtons.forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    const color =
+                        button.getAttribute("data-writing-color");
+
+                    if (!color) {
+                        return;
+                    }
+
+
+                    /* Change Air Writing color */
+
+                    if (
+                        typeof setWritingColor === "function"
+                    ) {
+
+                        setWritingColor(color);
+
+                    }
+
+
+                    /* Update custom color picker */
+
+                    if (customColor) {
+
+                        customColor.value = color;
+
+                    }
+
+
+                    /* Remove selected state */
+
+                    colorButtons.forEach(btn => {
+
+                        btn.classList.remove("selected");
+
+                    });
+
+
+                    /* Select clicked color */
+
+                    button.classList.add("selected");
+
+
+                    console.log(
+                        "Writing color selected:",
+                        color
+                    );
+
+                });
+
+            });
+
+
+            /* ========================================
+               CUSTOM COLOR
+               ======================================== */
+
+            if (customColor) {
+
+                customColor.addEventListener(
+                    "input",
+                    () => {
+
+                        const color =
+                            customColor.value;
+
+
+                        if (
+                            typeof setWritingColor === "function"
+                        ) {
+
+                            setWritingColor(color);
+
+                        }
+
+
+                        /* Remove preset selection */
+
+                        colorButtons.forEach(button => {
+
+                            button.classList.remove("selected");
+
+                        });
+
+
+                        console.log(
+                            "Custom writing color:",
+                            color
+                        );
+
+                    }
+                );
+
+            }
+
+
+            /* ========================================
+               DEFAULT COLOR
+               ======================================== */
+
+            if (
+                typeof setWritingColor === "function"
+            ) {
+
+                setWritingColor("#00f6ff");
+
+            }
+
+        });
+
+    </script>
 
 
 </body>
